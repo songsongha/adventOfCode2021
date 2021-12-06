@@ -1,4 +1,5 @@
 // Problem 1: How many points do at least 2 lines overlap? Consider horizontal / vertical lines only
+// Problem 2: Consider diagonal lines,  the lines int he list are only ever horizontal, vertical or diagonal
 
 const fs = require('fs')
 
@@ -40,9 +41,7 @@ coordinateList.forEach(line =>{
             lineDiagram[`${p1x}`][`${p1y + i * factor}`] = lineDiagram[`${p1x}`][`${p1y + i * factor}`] || 0
             lineDiagram[`${p1x}`][`${p1y + i * factor}`] += 1
         }
-    }
-    // line is vertical
-    if ( p1y === p2y ){
+    } else if ( p1y === p2y ){ // line is vertical
         let factor = 1
         if (p2x-p1x < 0) factor = -1
 
@@ -54,6 +53,21 @@ coordinateList.forEach(line =>{
             
             lineDiagram[`${p1x + i * factor}`][`${p1y}`] = lineDiagram[`${p1x + i * factor}`][`${p1y}`] || 0
             lineDiagram[`${p1x + i * factor}`][`${p1y}`] += 1
+        }
+    } else { // line is diagonal - Problem 2 code addition
+        let xfactor = 1
+        let yfactor = 1
+        if (p2x-p1x < 0) xfactor = -1
+        if (p2y-p1y < 0) yfactor = -1
+
+        for (let i = 0; i <= Math.abs(p2x-p1x); i++){ 
+            // create the x key if it doesn't already exist
+            if (!lineDiagram[`${p1x +i * xfactor}`]){
+                lineDiagram[`${p1x + i * xfactor}`] = {}
+            }
+            
+            lineDiagram[`${p1x + i * xfactor}`][`${p1y + i * yfactor}`] = lineDiagram[`${p1x + i * xfactor}`][`${p1y + i * yfactor}`] || 0
+            lineDiagram[`${p1x + i * xfactor}`][`${p1y + i * yfactor}`] += 1
         }
     }
 })
@@ -68,5 +82,5 @@ let count = 0
      })
  })
 
- // Problem 1 Solution
+ // Problem 2 Solution
  console.log(count)
