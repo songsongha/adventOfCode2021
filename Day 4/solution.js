@@ -6,7 +6,6 @@ const fs = require('fs')
 // separate the numbers called from the bingo cards in the input file and convert to Numbers
 const input = fs.readFileSync('./inputs.txt', 'utf8').split('\n')
 const callNums = input.shift(0).split(',').map(Number)
-console.log({callNums})
 
 const rows = input.map((element) =>{
     if (element !== ''){
@@ -30,21 +29,20 @@ while (index1 < rows.length) {
     } 
     index1++
 }
-console.log('bingocard', bingoCards[0], bingoCards.length, bingoCards)
 
 // a winner is a card with all one row marked or the same position on every row
 const isWinner = (card) => {
     let vertIndex = 0
     let horizIndex = 0
     let horizNullcounter = 0
-    let vertNullcounter = new Array(card[0].length)
+    let vertNullcounter = [0,0,0,0,0]
     let winner = false
-    while (vertIndex < card.length){
+    while (vertIndex < 5){
         while(horizIndex < 5){
             if(card[vertIndex][horizIndex] === null){
                 horizNullcounter++
-                vertNullcounter[vertIndex] += 1 
-                if (horizNullcounter === 5 || vertNullcounter[vertIndex] === 5 ) {
+                vertNullcounter[horizIndex] += 1 
+                if (horizNullcounter === 5 || vertNullcounter[horizIndex] === 5 ) {
                     winner = true
                 }
             }
@@ -54,11 +52,10 @@ const isWinner = (card) => {
         horizNullcounter = 0
         vertIndex++
     } 
-    console.log({winner})
     return winner
 }
+
 const playBingo = (callNums, bingoCards)=> {
-    console.log('playBingo called')
     let callNumIndex = 0
     let cardIndex = 0
     let rowIndex = 0
@@ -72,7 +69,6 @@ const playBingo = (callNums, bingoCards)=> {
                         if (callNumIndex > 5){
                             if (isWinner(bingoCards[cardIndex])){
                                 // BINGO!
-                                console.log('bingo!!', bingoCards[cardIndex])
                                 return { 
                                     winningCard: bingoCards[cardIndex],
                                     lastCall: callNums[callNumIndex]
@@ -97,7 +93,6 @@ const playBingo = (callNums, bingoCards)=> {
 
 // determine winning card
 const results = playBingo(callNums, bingoCards)
-console.log({results})
 
 // calculate score of winning card
 let score = 0
