@@ -71,7 +71,8 @@ const playBingo = (callNums, bingoCards)=> {
                                 // BINGO!
                                 return { 
                                     winningCard: bingoCards[cardIndex],
-                                    lastCall: callNums[callNumIndex]
+                                    lastCall: callNums[callNumIndex],
+                                    cardIndex
                                 }
                             }
                         }
@@ -95,18 +96,33 @@ const playBingo = (callNums, bingoCards)=> {
 const results = playBingo(callNums, bingoCards)
 
 // calculate score of winning card
-let score = 0
-if (results){
-    results.winningCard.forEach(row => {
-        row.forEach(num => {
-            score += num
+const scoreCard = (results) => {
+    let score = 0
+    if (results){
+        results.winningCard.forEach(row => {
+            row.forEach(num => {
+                score += num
+            })
         })
-    })
-    score = score * results.lastCall
+        return score * results.lastCall
+    }
 }
 
-// Solution to problem 1
-console.log({score})
+const winningCardScore = scoreCard(results)
 
-  
+// Solution to problem 1
+console.log({winningCardScore})
+
+// Problem 2 - Pick the card that will win last
+while (bingoCards.length > 1){
+    const result = playBingo(callNums, bingoCards)
+    bingoCards.splice(result.cardIndex, 1)
+}
+
+const lastWinner = playBingo(callNums, bingoCards)
+
+// calculate score of last winning card
+const lastWinnerScore = scoreCard(lastWinner)
+
+console.log({lastWinnerScore})
 
