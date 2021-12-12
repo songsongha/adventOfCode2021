@@ -4,15 +4,25 @@
 
 // put input into an nested array
 const fs = require('fs')
-const heightMap = fs.readFileSync('./inputs.txt', 'utf8').split('\n')
-console.log({heightMap})
-// const heightMap = heightMap.map(line => {
-//     return line.split('').map(Number)
-// })
-// console.log({heightMap})
+const input = fs.readFileSync('./inputs.txt', 'utf8').split('\n')
+const heightMap = input.map((row, rowIndex) => {
+    const array = []
+    const values = row.split('').map(Number)
+    values.forEach((value, colIndex) =>{
+        const obj = {
+            val: value,
+            row: rowIndex,
+            col: colIndex,
+            checked: false
+        }
+        array.push(obj)
+    })
+    return array
+})
 
-const getAdjacent = (heightMap, row, col) => {
+const getAdjacent = (heightMap, current) => {
     const adjacent = []
+    const{row, col} = current
 
     if (row >= 1) adjacent.push(heightMap[row-1][col])
     if (col >= 1) adjacent.push(heightMap[row][col-1])
@@ -26,17 +36,39 @@ const lowPoints = []
 for (let row = 0; row < heightMap.length; row++) {
     for (let col = 0; col < heightMap[row].length; col++){
         const current = heightMap[row][col]
-        const adjacent = getAdjacent(heightMap, row, col)
+        const adjacent = getAdjacent(heightMap, current)
         // if at lease one value in smaller than current value, current is not a low point
-        if (!adjacent.some(value => value <= current)) {
+        if (!adjacent.some(location => location.val <= current.val)) {
             lowPoints.push(current)
         }
     }
 }
-console.log({lowPoints})
 
 let risk = 0
 lowPoints.forEach(location =>{
-    risk += Number(location) + 1
+    risk += location.val + 1
 })
 console.log({risk})
+
+// find basins
+const basinSizes = lowPoints.map(lowPoint =>{
+    const queue = [lowPoint]
+    let size = 0
+    while (queue.length > 0){
+        const current = queue.shift()
+        // if the current value hasn't been checked yet or it isn't a 9 then we are still in the basin
+        if (!current.checked && current.val !== 9) {
+            queue.push(...getAdjacent(heightMap, current))
+            current.checked = true // this works becuase of pointers!
+            size++
+        }
+    }
+    return size
+})
+
+basinSizes.sort((a, b) => {
+  return b - a;
+})
+
+const solution2 = basinSizes[0] * basinSizes[1] * basinSizes[2]
+console.log({solution2});
