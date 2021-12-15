@@ -36,45 +36,52 @@ const getAdjacent = (heightMap, current) => {
 }
 
 let flashCount = 0
-for(let steps = 0 ; steps < 100; steps++){
-    const queue = []
-    // increase all energy levels by 1
-    for(let row = 0; row < energyLevels.length; row++) {
-        for( let col = 0; col < energyLevels[row].length; col++){
-            energyLevels[row][col].val += 1
-            if (energyLevels[row][col].val > 9){
-                // octopus 'flashes'
-                queue[queue.length] = energyLevels[row][col]
+let allFlashed = 0
+let steps = 0
+loop:{
+    while (allFlashed < energyLevels.length * energyLevels[0].length) {
+        allFlashed = 0
+        const queue = []
+        // increase all energy levels by 1
+        for(let row = 0; row < energyLevels.length; row++) {
+            for( let col = 0; col < energyLevels[row].length; col++){
+                energyLevels[row][col].val += 1
+                if (energyLevels[row][col].val > 9){
+                    // octopus 'flashes'
+                    queue[queue.length] = energyLevels[row][col]
+                }
             }
         }
-    }
-    // octopus adjacent to flashes levels are increased
-    while(queue.length > 0){
-        const current = queue.shift()
-        if (current){
-            if (current.val <= 9){
-                energyLevels[current.row][current.col].val +=1
+        // octopus adjacent to flashes levels are increased
+        while(queue.length > 0){
+            const current = queue.shift()
+            if (current){
+                if (current.val <= 9){
+                    energyLevels[current.row][current.col].val +=1
+                }
+                if (current.val > 9 && !current.flashed){
+                    energyLevels[current.row][current.col].flashed = true
+                    flashCount++
+                    queue.push(...getAdjacent(energyLevels,current))
+                }
+            } else {
+                console.log('current is undefined')
+                break
             }
-            if (current.val > 9 && !current.flashed){
-                energyLevels[current.row][current.col].flashed = true
-                flashCount++
-                queue.push(...getAdjacent(energyLevels,current))
-            }
-        } else {
-            console.log('current is undefined')
-            break
         }
-    }
 
-    // set all energy levels above 9 to 0 and reset to allow flashes
-    for(let row = 0; row < energyLevels.length; row++) {
-        for( let col = 0; col < energyLevels[row].length; col++){
-            if (energyLevels[row][col].flashed){
-                energyLevels[row][col].flashed = false
-                energyLevels[row][col].val = 0
+        // set all energy levels above 9 to 0 and reset to allow flashes
+        for(let row = 0; row < energyLevels.length; row++) {
+            for( let col = 0; col < energyLevels[row].length; col++){
+                if (energyLevels[row][col].flashed){
+                    energyLevels[row][col].flashed = false
+                    energyLevels[row][col].val = 0
+                    allFlashed++
+                }
             }
         }
+        steps++
     }
 }
-
  console.log({flashCount})
+ console.log({steps})
