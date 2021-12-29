@@ -1,4 +1,5 @@
 // Problem 1: After 10 steps what is the difference between the number of the most common element and the least common element?
+// Problem 2: After 40?
 
 const fs = require('fs')
 
@@ -11,32 +12,80 @@ const insertGuide = Object.fromEntries(input.map(entry => {
     return entry.split(' -> ')
 }))
 
-const insertPolymer = (template, guide) => {
-    let str = template[0]
-    
+const insertPolymerCount = (count, guide) => {    
+    const { pairs, letters } = count
+    const newCount = {
+        pairs: {},
+        letters
+    }
+
+    const pairsArray = Object.keys(pairs)
+    for(let i = 0; i < pairsArray.length; i++){
+        // look up the pair in the guide
+        const insertStr = guide[pairsArray[i]]  
+        // increase letter count by the number of times the pair is seen
+        if (newCount.letters[insertStr] === undefined) {
+            newCount.letters[insertStr] = pairs[pairsArray[i]]
+        } else {
+            newCount.letters[insertStr] = newCount.letters[insertStr] + pairs[pairsArray[i]]
+        }
+        // create and count new pairs
+        const newPair1 = pairsArray[i].slice(0,1) + insertStr
+        const newPair2 = insertStr + pairsArray[i].slice(1,2)
+        if (newCount.pairs[newPair1] === undefined) {
+            newCount.pairs[newPair1] = pairs[pairsArray[i]]
+        } else {
+            newCount.pairs[newPair1] = newCount.pairs[newPair1] + pairs[pairsArray[i]]
+        }
+        if (newCount.pairs[newPair2] === undefined) {
+            newCount.pairs[newPair2] = pairs[pairsArray[i]]
+        } else {
+            newCount.pairs[newPair2] = newCount.pairs[newPair2] + pairs[pairsArray[i]]
+        }
+    }
+    return newCount
+}
+
+
+const insertPolymers = (steps) => {
+    let count = {
+        pairs: {},
+        letters: {}
+    }
+    // put the template count into an object
     for (let i = 0; i < template.length -1; i++) {
-        const insertStr = guide[template.slice(i,i+2)]
-        str = str + insertStr + template[i+1]
+        if (count.pairs[template.slice(i,i+2)] === undefined) {
+            count.pairs[template.slice(i,i+2)] = 1
+        } else {
+            count.pairs[template.slice(i,i+2)] += 1
+        }
+        if (count.letters[template.slice(i,i+1)] === undefined) {
+            count.letters[template.slice(i,i+1)] = 1
+        } else {
+            count.letters[template.slice(i,i+1)] += 1
+        }
     }
-    return str
-}
-
-for( let step = 0; step < 10; step ++) {
-    template = insertPolymer(template, insertGuide)
-}
-
-// count the elements
-const counter = {}
-for(let i = 0; i < template.length; i++){
-    if (counter[template[i]] === undefined) {
-        counter[template[i]] = 1
+    if (count.letters[template.slice(-1)] === undefined) {
+        count.letters[template.slice(-1)] = 1
     } else {
-        counter[template[i]] += 1
+        count.letters[template.slice(-1)] += 1
     }
-}
-console.log({counter})
-const max = Object.keys(counter).reduce((a, b) => counter[a] > counter[b] ? a : b)
-const min = Object.keys(counter).reduce((a, b) => counter[a] < counter[b] ? a : b)
+    
+    // insert polymers
+    for( let step = 0; step < steps; step ++) {
+        count = insertPolymerCount(count, insertGuide)
+    }
 
-const p1Solution = counter[max] - counter[min]
+    const max = Object.keys(count.letters).reduce((a, b) => count.letters[a] > count.letters[b] ? a : b)
+    const min = Object.keys(count.letters).reduce((a, b) => count.letters[a] < count.letters[b] ? a : b)
+ 
+    const solution = count.letters[max] - count.letters[min]
+
+    return solution
+}
+
+p1Solution = insertPolymers(10)
 console.log({p1Solution})
+
+p2Solution = insertPolymers(40)
+console.log({p2Solution})
