@@ -40,8 +40,36 @@ const parsePacket = (binary, totalSubPacket = -1) =>{
                         leadingBit = binary.slice(i+5, i+6)
                     }    
                 }
+                const value = parseInt(literal,2) //return value
+                console.log({ value })
             } else {
                 // packet is an operator 
+                switch(id) {
+                    case 0: 
+                      // sum packet - value is sum of all subpackets
+                      break
+                    case 1:
+                      // product packet - value is product of all subpackets
+                      break
+                    case 2:
+                      // minimum packet - value is the minimum of all subpackets
+                      break
+                    case 3:
+                      // maximum packet - value is the maximum of all subpackets
+                      break
+                    case 5:
+                      // greater than packet - always 2 subpackets, if first packet is greater than second, value is 1 otherwise 0
+                      break
+                    case 6:
+                      // less than packet - always 2 subpackets, if first packet is less than second, value is 1 otherwise 0
+                      break
+                    case 7:
+                      // equal to packet - always 2 subpackets, if packets equal value is 1 otherwise 0
+                      break
+                    default:
+                      console.log('unknown id',id)
+                  }
+                  
                 const lengthId = binary.slice(6,7)
                 if (lengthId === '0'){
                     // next 15 bits are a number that represents the total length in bits of the sub-packets contained by this packet.
