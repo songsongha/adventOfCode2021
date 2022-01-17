@@ -1,7 +1,6 @@
 // Problem 1: What is the most efficient movement of the crab submarines and the fuel amount used?
 // Problem 2: For each step, the fuel burned increases by 1, recalculate fuel used for most efficient movement
 
-const { Console } = require('console');
 const fs = require('fs')
 let crabPositionArray = fs.readFileSync('./inputs.txt', 'utf8').split(',').map(Number)
 
