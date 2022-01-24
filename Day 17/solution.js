@@ -15,14 +15,10 @@ const targetArea = {
 }
 console.log({targetArea})
 
-const position = {
-    x: 0,
-    y: 0
-}
 
 const velocity = {
-    x: 0,
-    y: 0
+    x: targetArea.x[0],
+    y: targetArea.y[0]
 }
 
 const drag = (xVelocity) => {
@@ -58,5 +54,28 @@ const findMaxY = (position, velocity) =>{
 }
 
 const findInitialV = () => {
-    
+    let maxY = targetArea.y[0]
+    for ( let i = 0; i < 2 * targetArea.x[1]; i++){
+        for (let j = -125; j < Math.abs(targetArea.y[1]); j++){
+            const newVelocity = {
+                x: i,
+                y: j
+            }
+            const position = {
+                x: 0,
+                y: 0
+            }
+            
+            const yPosition = findMaxY(position, newVelocity)
+            if (yPosition && yPosition > maxY){
+                maxY = yPosition
+                console.log({maxY})
+                console.log({newVelocity})
+            }
+            newVelocity.y++
+        }
+    }
+    console.log('This is the max Y', maxY)
 }
+
+findInitialV()
